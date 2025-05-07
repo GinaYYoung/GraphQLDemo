@@ -7,6 +7,10 @@ export const resolvers = {
     Query: {
         users: async() => {
             return users;
+          },
+        user: async(_:undefined, args:any) => {
+            const userId = args.id;
+            return users.find(v => v.id === userId);
           }
     }
   }
