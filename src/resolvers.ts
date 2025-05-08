@@ -32,13 +32,36 @@ export const resolvers = {
         createUser: async(_:undefined, args:any) => {
             const newUser = { id: String(users.length + 1), ...args };
             users.push(newUser);
+            const userFriends = args.friends;
+            for(let i=0;i<userFriends.length;i++){
+              const friend = users.find(v => v.id === userFriends[i]);
+
+              if(friend && friend.id === newUser.id){
+                throw new Error("User cannot be friends with themselves");
+              }
+              if(friend){
+                friend.friends.push(newUser.id);
+              }
+            }
             return newUser;
           },
         updateUser: async(_:undefined, args:any) => {
             const userId = args.id;
+            const userFriends = args.friends;
             const userIndex = users.findIndex(v => v.id === userId);
             if (userIndex !== -1) {
-              users[userIndex] = { ...users[userIndex], ...args };
+              if(userFriends && userFriends.length > 0){
+                for(let i=0;i<userFriends.length;i++){
+                  const friend = users.find(v => v.id === userFriends[i]);
+                  if(friend && friend.id === userId){
+                    throw new Error("User cannot be friends with themselves");
+                  }
+                  if(!friend){
+                    throw new Error("Friend not found");
+                  }
+                }
+                users[userIndex] = { ...users[userIndex], ...args };
+              }
               return users[userIndex];
             }
             throw new Error("User not found");
@@ -49,6 +72,9 @@ export const resolvers = {
             if (userIndex !== -1) {
               const deletedUser = users[userIndex];
               users.splice(userIndex, 1);
+              for(let i=0;i<users.length;i++){
+                users[i].friends = users[i].friends.filter(v => v !== userId);
+              }
               return deletedUser;
             }
             throw new Error("User not found");
