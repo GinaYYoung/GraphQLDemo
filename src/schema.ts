@@ -13,8 +13,15 @@ type User {
 }
 
 type Mutation {
-    createUser(name: String, email: String,friends: [String]): User
-    updateUser(id: String, name: String, email: String,friends: [String]): User
+    createUser(userInput: UserInput): User
+    updateUser(userInput: UserInput): User
     deleteUser(id: String): User
+}
+
+input UserInput {
+    id: String
+    name: String!
+    email: String!
+    friends: [String]
 }
 `;

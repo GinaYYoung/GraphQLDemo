@@ -30,9 +30,9 @@ export const resolvers = {
     },
     Mutation: {
         createUser: async(_:undefined, args:any) => {
-            const newUser = { id: String(users.length + 1), ...args };
+            const newUser = { id: String(users.length + 1), ...args.userInput };
             users.push(newUser);
-            const userFriends = args.friends;
+            const userFriends = args.userInput.friends;
             for(let i=0;i<userFriends.length;i++){
               const friend = users.find(v => v.id === userFriends[i]);
 
@@ -46,11 +46,13 @@ export const resolvers = {
             return newUser;
           },
         updateUser: async(_:undefined, args:any) => {
-            const userId = args.id;
-            const userFriends = args.friends;
+            const userId = args.userInput.id;
+            const userFriends = args.userInput.friends;
+            console.log("args.userInput",userId)
+            console.log("args.userInput",userFriends)
             const userIndex = users.findIndex(v => v.id === userId);
             if (userIndex !== -1) {
-              if(userFriends && userFriends.length > 0){
+
                 for(let i=0;i<userFriends.length;i++){
                   const friend = users.find(v => v.id === userFriends[i]);
                   if(friend && friend.id === userId){
@@ -60,8 +62,8 @@ export const resolvers = {
                     throw new Error("Friend not found");
                   }
                 }
-                users[userIndex] = { ...users[userIndex], ...args };
-              }
+                users[userIndex] = { ...users[userIndex], ...args.userInput };
+              
               return users[userIndex];
             }
             throw new Error("User not found");
