@@ -1,6 +1,8 @@
 const users = [
-    { id: "1", name: "Alice", email: "alice@example.com" },
-    { id: "2", name: "Bob", email: "bob@example.com" }
+    { id: "1", name: "Alice", email: "alice@example.com",friends:["2"] },
+    { id: "2", name: "Bob", email: "bob@example.com",friends:["1"] },
+    { id: "3", name: "Kelly", email: "Kelly@example.com",friends:["1","2"] }
+
   ]
 
 export const resolvers = {
@@ -11,7 +13,20 @@ export const resolvers = {
         user: async(_:undefined, args:any) => {
             const userId = args.id;
             return users.find(v => v.id === userId);
+          },
+    },
+    User: {  
+      friends: (parent: any) => {
+        const user = parent;
+        const friends = [];
+        const friendsMap = new Map(user.friends.map((id: string) => [id, true]));
+        for (let i = 0; i < users.length; i++) {
+          if (friendsMap.has(users[i].id)) {
+            friends.push(users[i]);
           }
+        }
+        return friends;
+      }
     },
     Mutation: {
         createUser: async(_:undefined, args:any) => {
