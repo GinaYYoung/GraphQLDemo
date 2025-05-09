@@ -28,10 +28,13 @@ export const resolvers = {
         friends: (parent: any) => {
             const user = parent;
             const friends = [];
-            const friendsMap = new Map(user.friends.map((id: string) => [id, true]));
-            for (let i = 0; i < users.length; i++) {
-                if (friendsMap.has(users[i].id)) {
-                    friends.push(users[i]);
+
+            for (let i = 0; i < user.friends.length; i++) {
+                const friend = users.find((u)=>u.id === user.friends[i])
+                if (friend) {
+                    friends.push(friend);
+                }else{
+                  friends.push(null)
                 }
             }
             return friends;
