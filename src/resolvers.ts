@@ -12,10 +12,10 @@ export const resolvers = {
             try {
                 return users;
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         },
         user: async (_: undefined, args: any) => {
@@ -30,10 +30,10 @@ export const resolvers = {
                 }
                 return user;
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         },
     },
@@ -53,10 +53,10 @@ export const resolvers = {
                 }
                 return friends;
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         }
     },
@@ -80,10 +80,10 @@ export const resolvers = {
                 }
                 return newUser;
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         },
         updateUser: async (_: undefined, args: any) => {
@@ -118,10 +118,10 @@ export const resolvers = {
                 users[userIndex] = { ...users[userIndex], ...args.userInput };
                 return users[userIndex];
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         },
         deleteUser: async (_: undefined, args: any) => {
@@ -143,10 +143,10 @@ export const resolvers = {
                 }
                 return deletedUser;
             } catch (error) {
-                throw new AppError(
-                    ErrorMessages.INTERNAL_SERVER_ERROR,
-                    500
-                );
+                if (error instanceof AppError) {
+                    throw error;
+                }
+                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
         }
     }
