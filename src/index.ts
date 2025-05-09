@@ -12,11 +12,13 @@ const server = new ApolloServer({
   }),
 });
 
-server
-  .listen()
-  .then(({ url }) => {
+async function startServer() {
+  try {
+    const { url } = await server.listen();
     console.log(`Server is running on ${url}`);
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Error starting server:', error);
-  });
+  }
+}
+
+startServer();
