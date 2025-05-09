@@ -2,7 +2,6 @@ export const typeDefs = `
 type Query {
     users: [User!]!
     user(id: String): User
-    friends(id: String): [User]
 }
 
 type User {

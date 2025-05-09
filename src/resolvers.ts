@@ -48,8 +48,6 @@ export const resolvers = {
         updateUser: async(_:undefined, args:any) => {
             const userId = args.userInput.id;
             const userFriends = args.userInput.friends;
-            console.log("args.userInput",userId)
-            console.log("args.userInput",userFriends)
             const userIndex = users.findIndex(v => v.id === userId);
             if (userIndex !== -1) {
 
