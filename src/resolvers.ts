@@ -9,145 +9,108 @@ const users = [
 export const resolvers = {
     Query: {
         users: async () => {
-            try {
-                return users;
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
-                }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
-            }
+            return users;
         },
         user: async (_: undefined, args: any) => {
-            try {
-                const userId = args.id;
-                const user = users.find(v => v.id === userId);
-                if (!user) {
-                    throw new AppError(
-                        ErrorMessages.USER_NOT_FOUND,
-                        404
-                    );
-                }
-                return user;
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
-                }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
+
+            const userId = args.id;
+            const user = users.find(v => v.id === userId);
+            if (!user) {
+                throw new AppError(
+                    ErrorMessages.USER_NOT_FOUND,
+                    404
+                );
             }
+            return user;
+
         },
     },
     User: {
         friends: (parent: any) => {
-            try {
-                const user = parent;
-                const friends = [];
+            const user = parent;
+            const friends = [];
 
-                for (let i = 0; i < user.friends.length; i++) {
-                    const friend = users.find((u) => u.id === user.friends[i])
-                    if (friend) {
-                        friends.push(friend);
-                    } else {
-                        friends.push(null)
-                    }
+            for (let i = 0; i < user.friends.length; i++) {
+                const friend = users.find((u) => u.id === user.friends[i])
+                if (friend) {
+                    friends.push(friend);
+                } else {
+                    friends.push(null)
                 }
-                return friends;
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
-                }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
+            return friends;
+
         }
     },
     Mutation: {
         createUser: async (_: undefined, args: any) => {
-            try {
-                const newUser = { id: String(users.length + 1), ...args.userInput };
-                users.push(newUser);
-                const userFriends = args.userInput.friends;
-                for (let i = 0; i < userFriends.length; i++) {
-                    const friend = users.find(v => v.id === userFriends[i]);
-                    if (friend && friend.id === newUser.id) {
-                        throw new AppError(
-                            ErrorMessages.INVALID_FRIEND,
-                            400
-                        );
-                    }
-                    if (friend) {
-                        friend.friends.push(newUser.id);
-                    }
+            const newUser = { id: String(users.length + 1), ...args.userInput };
+            users.push(newUser);
+            const userFriends = args.userInput.friends;
+            for (let i = 0; i < userFriends.length; i++) {
+                const friend = users.find(v => v.id === userFriends[i]);
+                if (friend && friend.id === newUser.id) {
+                    throw new AppError(
+                        ErrorMessages.INVALID_FRIEND,
+                        400
+                    );
                 }
-                return newUser;
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
+                if (friend) {
+                    friend.friends.push(newUser.id);
                 }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
+            return newUser;
+
         },
         updateUser: async (_: undefined, args: any) => {
-            try {
-                const userId = args.userInput.id;
-                const userFriends = args.userInput.friends;
-                const userIndex = users.findIndex(v => v.id === userId);
+            const userId = args.userInput.id;
+            const userFriends = args.userInput.friends;
+            const userIndex = users.findIndex(v => v.id === userId);
 
-                if (userIndex === -1) {
+            if (userIndex === -1) {
+                throw new AppError(
+                    ErrorMessages.USER_NOT_FOUND,
+                    404
+                );
+            }
+
+            for (let i = 0; i < userFriends.length; i++) {
+                const friend = users.find(v => v.id === userFriends[i]);
+                if (friend && friend.id === userId) {
                     throw new AppError(
-                        ErrorMessages.USER_NOT_FOUND,
+                        ErrorMessages.INVALID_FRIEND,
+                        400
+                    );
+                }
+                if (!friend) {
+                    throw new AppError(
+                        ErrorMessages.FRIEND_NOT_FOUND,
                         404
                     );
                 }
-
-                for (let i = 0; i < userFriends.length; i++) {
-                    const friend = users.find(v => v.id === userFriends[i]);
-                    if (friend && friend.id === userId) {
-                        throw new AppError(
-                            ErrorMessages.INVALID_FRIEND,
-                            400
-                        );
-                    }
-                    if (!friend) {
-                        throw new AppError(
-                            ErrorMessages.FRIEND_NOT_FOUND,
-                            404
-                        );
-                    }
-                }
-
-                users[userIndex] = { ...users[userIndex], ...args.userInput };
-                return users[userIndex];
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
-                }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
             }
+
+            users[userIndex] = { ...users[userIndex], ...args.userInput };
+            return users[userIndex];
+
         },
         deleteUser: async (_: undefined, args: any) => {
-            try {
-                const userId = args.id;
-                const userIndex = users.findIndex(v => v.id === userId);
+            const userId = args.id;
+            const userIndex = users.findIndex(v => v.id === userId);
 
-                if (userIndex === -1) {
-                    throw new AppError(
-                        ErrorMessages.USER_NOT_FOUND,
-                        404
-                    );
-                }
-
-                const deletedUser = users[userIndex];
-                users.splice(userIndex, 1);
-                for (let i = 0; i < users.length; i++) {
-                    users[i].friends = users[i].friends.filter(v => v !== userId);
-                }
-                return deletedUser;
-            } catch (error) {
-                if (error instanceof AppError) {
-                    throw error;
-                }
-                throw new AppError(ErrorMessages.INTERNAL_SERVER_ERROR, 500);
+            if (userIndex === -1) {
+                throw new AppError(
+                    ErrorMessages.USER_NOT_FOUND,
+                    404
+                );
             }
+
+            const deletedUser = users[userIndex];
+            users.splice(userIndex, 1);
+            for (let i = 0; i < users.length; i++) {
+                users[i].friends = users[i].friends.filter(v => v !== userId);
+            }
+            return deletedUser;
         }
     }
 }
