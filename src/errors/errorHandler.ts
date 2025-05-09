@@ -8,7 +8,6 @@ export const formatError = (error: GraphQLError) => {
   if (originalError instanceof AppError) {
     return {
       message: originalError.message,
-      code: originalError.code,
       statusCode: originalError.statusCode,
     };
   }
@@ -16,7 +15,6 @@ export const formatError = (error: GraphQLError) => {
   // 默認錯誤格式
   return {
     message: error.message,
-    code: 'INTERNAL_SERVER_ERROR',
     statusCode: 500,
   };
 }; 

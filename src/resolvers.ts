@@ -1,4 +1,4 @@
-import { AppError, ErrorCodes, ErrorMessages } from './errors';
+import { AppError, ErrorMessages } from './errors';
 
 const users = [
     { id: "1", name: "Alice", email: "alice@example.com",friends:["2"] },
@@ -16,8 +16,7 @@ export const resolvers = {
             const user = users.find(v => v.id === userId);
             if (!user) {
                 throw new AppError(
-                    ErrorMessages[ErrorCodes.USER_NOT_FOUND],
-                    ErrorCodes.USER_NOT_FOUND,
+                    ErrorMessages.USER_NOT_FOUND,
                     404
                 );
             }
@@ -49,8 +48,7 @@ export const resolvers = {
                 const friend = users.find(v => v.id === userFriends[i]);
                 if(friend && friend.id === newUser.id) {
                     throw new AppError(
-                        ErrorMessages[ErrorCodes.INVALID_FRIEND],
-                        ErrorCodes.INVALID_FRIEND,
+                        ErrorMessages.INVALID_FRIEND,
                         400
                     );
                 }
@@ -67,8 +65,7 @@ export const resolvers = {
             
             if (userIndex === -1) {
                 throw new AppError(
-                    ErrorMessages[ErrorCodes.USER_NOT_FOUND],
-                    ErrorCodes.USER_NOT_FOUND,
+                    ErrorMessages.USER_NOT_FOUND,
                     404
                 );
             }
@@ -77,15 +74,13 @@ export const resolvers = {
                 const friend = users.find(v => v.id === userFriends[i]);
                 if(friend && friend.id === userId) {
                     throw new AppError(
-                        ErrorMessages[ErrorCodes.INVALID_FRIEND],
-                        ErrorCodes.INVALID_FRIEND,
+                        ErrorMessages.INVALID_FRIEND,
                         400
                     );
                 }
                 if(!friend) {
                     throw new AppError(
-                        ErrorMessages[ErrorCodes.FRIEND_NOT_FOUND],
-                        ErrorCodes.FRIEND_NOT_FOUND,
+                        ErrorMessages.FRIEND_NOT_FOUND,
                         404
                     );
                 }
@@ -100,8 +95,7 @@ export const resolvers = {
             
             if (userIndex === -1) {
                 throw new AppError(
-                    ErrorMessages[ErrorCodes.USER_NOT_FOUND],
-                    ErrorCodes.USER_NOT_FOUND,
+                    ErrorMessages.USER_NOT_FOUND,
                     404
                 );
             }
