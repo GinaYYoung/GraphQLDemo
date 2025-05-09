@@ -12,4 +12,5 @@ This is a simple GraphQL API demonstration project using Apollo Server and TypeS
 ## How to Start
 
 1. Clone this repository to your local machine
-2. ```npm start```
+2. ```npm i```
+3. ```npm start```
