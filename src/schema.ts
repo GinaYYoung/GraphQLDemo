@@ -1,7 +1,13 @@
-export const typeDefs = `
+export const typeDefs = /* GraphQL */ `
 type Query {
     users: [User!]!
     user(id: String): User
+}
+
+type Mutation {
+    createUser(userInput: CreateUserInput): User
+    updateUser(userInput: UpdateUserInput): User
+    deleteUser(id: String): User
 }
 
 type User {
@@ -11,16 +17,22 @@ type User {
     friends: [User]
 }
 
-type Mutation {
-    createUser(userInput: UserInput): User
-    updateUser(userInput: UserInput): User
-    deleteUser(id: String): User
-}
-
-input UserInput {
-    id: String
+input CreateUserInput {
     name: String!
     email: String!
-    friends: [String]
+    friends: [inputFriend]
 }
+
+input UpdateUserInput {
+    id: String!
+    name: String!
+    email: String!
+    friends: [inputFriend]
+}
+
+input inputFriend {
+    id: String!
+}
+
+
 `;

@@ -1,18 +1,28 @@
 import { AppError, ErrorMessages } from './errors';
+import {
+    Query,
+    Mutation,
+    User,
+    CreateUserInput,
+    UpdateUserInput
+} from './gql/types';
 
-const users = [
-    { id: "1", name: "Alice", email: "alice@example.com", friends: ["2"] },
-    { id: "2", name: "Bob", email: "bob@example.com", friends: ["1"] },
-    { id: "3", name: "Kelly", email: "Kelly@example.com", friends: ["1", "2"] }
-]
+const users: User[] = [
+    { id: "1", name: "Alice", email: "alice@example.com" },
+    { id: "2", name: "Bob", email: "bob@example.com" },
+    { id: "3", name: "Kelly", email: "Kelly@example.com" }
+];
+
+users[0].friends = [users[1], users[2]];
+users[1].friends = [users[0]];
+users[2].friends = [users[0]];
 
 export const resolvers = {
     Query: {
         users: async () => {
             return users;
         },
-        user: async (_: undefined, args: any) => {
-
+        user: async (_: undefined, args: { id: string; }) => {
             const userId = args.id;
             const user = users.find(v => v.id === userId);
             if (!user) {
@@ -22,49 +32,54 @@ export const resolvers = {
                 );
             }
             return user;
-
         },
-    },
+    } as unknown as Query,
     User: {
-        friends: (parent: any) => {
-            const user = parent;
-            const friends = [];
-
-            for (let i = 0; i < user.friends.length; i++) {
-                const friend = users.find((u) => u.id === user.friends[i])
-                if (friend) {
-                    friends.push(friend);
-                } else {
-                    friends.push(null)
+        friends: (parent: User) => {
+            const friends: (User | null)[] = [];
+            if (parent.friends) {
+                for (let i = 0; i < parent.friends.length || 0; i++) {
+                    const friend = users.find((u) => {
+                        if (parent.friends) {
+                            return u.id === parent.friends[i]?.id
+                        }
+                    })
+                    if (friend) {
+                        friends.push(friend);
+                    } else {
+                        friends.push(null)
+                    }
                 }
             }
             return friends;
-
         }
-    },
+    } as unknown as User,
     Mutation: {
-        createUser: async (_: undefined, args: any) => {
-            const newUser = { id: String(users.length + 1), ...args.userInput };
+        createUser: async (_: undefined, args: { userInput: CreateUserInput }) => {
+            const newUser: User = {
+                id: String(users.length + 1),
+                ...args.userInput
+            };
             users.push(newUser);
-            const userFriends = args.userInput.friends;
+            const userFriends = args.userInput.friends || [];
             for (let i = 0; i < userFriends.length; i++) {
-                const friend = users.find(v => v.id === userFriends[i]);
+                console.log(userFriends[i])
+                const friend = users.find(v => v.id === userFriends[i]?.id);
                 if (friend && friend.id === newUser.id) {
                     throw new AppError(
                         ErrorMessages.INVALID_FRIEND,
                         400
                     );
                 }
-                if (friend) {
-                    friend.friends.push(newUser.id);
+                if (friend && friend.friends) {
+                    friend.friends.push(newUser);
                 }
             }
             return newUser;
-
         },
-        updateUser: async (_: undefined, args: any) => {
+        updateUser: async (_: undefined, args: { userInput: UpdateUserInput }) => {
             const userId = args.userInput.id;
-            const userFriends = args.userInput.friends;
+            const userFriends = args.userInput.friends || [];
             const userIndex = users.findIndex(v => v.id === userId);
 
             if (userIndex === -1) {
@@ -75,7 +90,7 @@ export const resolvers = {
             }
 
             for (let i = 0; i < userFriends.length; i++) {
-                const friend = users.find(v => v.id === userFriends[i]);
+                const friend = users.find(v => v.id === userFriends[i]?.id);
                 if (friend && friend.id === userId) {
                     throw new AppError(
                         ErrorMessages.INVALID_FRIEND,
@@ -92,9 +107,8 @@ export const resolvers = {
 
             users[userIndex] = { ...users[userIndex], ...args.userInput };
             return users[userIndex];
-
         },
-        deleteUser: async (_: undefined, args: any) => {
+        deleteUser: async (_: undefined, args: { id: string }) => {
             const userId = args.id;
             const userIndex = users.findIndex(v => v.id === userId);
 
@@ -108,9 +122,9 @@ export const resolvers = {
             const deletedUser = users[userIndex];
             users.splice(userIndex, 1);
             for (let i = 0; i < users.length; i++) {
-                users[i].friends = users[i].friends.filter(v => v !== userId);
+                users[i].friends = users[i].friends?.filter(v => v?.id !== userId);
             }
             return deletedUser;
         }
-    }
-}
+    } as unknown as Mutation,
+};
