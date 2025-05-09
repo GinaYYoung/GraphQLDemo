@@ -9,7 +9,14 @@ const users = [
 export const resolvers = {
     Query: {
         users: async () => {
-            return users;
+            try {
+                return users;
+            } catch (error) {
+                throw new AppError(
+                    ErrorMessages.INTERNAL_SERVER_ERROR,
+                    500
+                );
+            }
         },
         user: async (_: undefined, args: any) => {
             try {
