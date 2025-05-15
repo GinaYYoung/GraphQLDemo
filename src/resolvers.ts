@@ -63,7 +63,6 @@ export const resolvers = {
             users.push(newUser);
             const userFriends = args.userInput.friends || [];
             for (let i = 0; i < userFriends.length; i++) {
-                console.log(userFriends[i])
                 const friend = users.find(v => v.id === userFriends[i]?.id);
                 if (friend && friend.id === newUser.id) {
                     throw new AppError(
